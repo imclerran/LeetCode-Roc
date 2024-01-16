@@ -1,5 +1,5 @@
 # LeetCode Roc
-[![Roc Logo](/roc-logo-sm.png)](https://roc-lang.org)
+[![Roc Logo](/assets/roc-logo-sm.png)](https://roc-lang.org)
 
 ### Solutions for LeetCode problems written in the Roc programming language
 Roc is a purely functional programming language that is currently under development. It is inspired by Elm, with the intention of being a fast, freindly and purely functional general purpose language.
