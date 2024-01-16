@@ -3,6 +3,8 @@ interface RocUtils.BinaryTree
         countTreeLevels,
         createRoot,
         createTreeFromStrList,
+        deleteNode,
+        getDepthAtIdx,
         getLhs,
         getLhsIdx,
         getNodeVal,
@@ -14,7 +16,9 @@ interface RocUtils.BinaryTree
         hasLhs,
         hasRhs,
         insertLhs,
+        insertLhsNode,
         insertRhs,
+        insertRhsNode,
         isLeaf,
     ]
     imports []
@@ -92,8 +96,6 @@ insertLhs = \tree, idx, val ->
         Ok Null -> List.set tree idx lhs
         Err OutOfBounds ->
             if List.len tree == idx then
-                dbg "appending"
-
                 List.append tree lhs
             else
                 addEmptyLevel tree |> List.set (idx * 2 + 1) lhs
@@ -109,6 +111,44 @@ insertRhs = \tree, idx, val ->
                 List.append tree lhs
             else
                 addEmptyLevel tree |> List.set (idx * 2 + 2) lhs
+
+insertLhsNode : Tree a, Nat, Node a -> Tree a
+insertLhsNode = \tree, idx, node ->
+    lhs = when node is
+        Data data -> Data { data.val, idx: idx * 2 + 1 }
+        Null -> Null
+    when List.get tree (idx * 2 + 1) is
+        Ok (Data _) -> List.set tree (idx * 2 + 1) lhs
+        Ok Null -> List.set tree idx lhs
+        Err OutOfBounds ->
+            if List.len tree == idx then
+                List.append tree lhs
+            else
+                addEmptyLevel tree |> List.set (idx * 2 + 1) lhs
+
+insertRhsNode : Tree a, Nat, Node a -> Tree a
+insertRhsNode = \tree, idx, node ->
+    rhs = when node is
+        Data data -> Data { data.val, idx: idx * 2 + 2 }
+        Null -> Null
+    when List.get tree (idx * 2 + 1) is
+        Ok (Data _) -> List.set tree idx rhs
+        Ok Null -> List.set tree (idx * 2 + 1) rhs
+        Err OutOfBounds ->
+            if List.len tree == idx then
+                List.append tree rhs
+            else
+                addEmptyLevel tree |> List.set (idx * 2 + 2) rhs
+
+deleteNode : Tree a, Nat -> Tree a
+deleteNode = \tree, idx ->
+    when List.get tree idx is
+        Ok (Data _) -> 
+            treeLhsDeleted = deleteNode tree (getLhsIdx idx)
+            treeRhsDeleted = deleteNode treeLhsDeleted (getRhsIdx idx)
+            List.set treeRhsDeleted idx Null
+        Ok Null -> tree
+        Err OutOfBounds -> tree
 
 ## Add space for a new level to the tree
 addEmptyLevel : Tree a -> Tree a
@@ -144,3 +184,8 @@ getParentNode : Tree a, Nat -> Node a
 getParentNode = \tree, idx ->
     List.get tree (getParentIdx idx)
     |> Result.withDefault Null
+
+getDepthAtIdx : Nat -> Nat
+getDepthAtIdx = \idx ->
+    if idx == 0 then 0
+    else getDepthAtIdx (getParentIdx idx) + 1
