@@ -17,6 +17,7 @@ interface RocUtils.BinaryTree
         hasRhs,
         insertLhs,
         insertLhsNode,
+        insertNode,
         insertRhs,
         insertRhsNode,
         isLeaf,
@@ -48,7 +49,7 @@ createTreeFromStrList = \strList, strToVal ->
             when strToVal strVal is
                 Ok val -> Data { val, idx }
                 Err _ -> Null
-        )
+        )   
 
 hasLhs : Tree a, Nat -> Bool
 hasLhs = \tree, idx ->
@@ -115,7 +116,7 @@ insertRhs = \tree, idx, val ->
 insertLhsNode : Tree a, Nat, Node a -> Tree a
 insertLhsNode = \tree, idx, node ->
     lhs = when node is
-        Data data -> Data { data.val, idx: idx * 2 + 1 }
+        Data data -> Data { val: data.val, idx: idx * 2 + 1 }
         Null -> Null
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree (idx * 2 + 1) lhs
@@ -129,7 +130,7 @@ insertLhsNode = \tree, idx, node ->
 insertRhsNode : Tree a, Nat, Node a -> Tree a
 insertRhsNode = \tree, idx, node ->
     rhs = when node is
-        Data data -> Data { data.val, idx: idx * 2 + 2 }
+        Data data -> Data { val: data.val, idx: idx * 2 + 2 }
         Null -> Null
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree idx rhs
@@ -148,6 +149,19 @@ deleteNode = \tree, idx ->
             treeRhsDeleted = deleteNode treeLhsDeleted (getRhsIdx idx)
             List.set treeRhsDeleted idx Null
         Ok Null -> tree
+        Err OutOfBounds -> tree
+
+insertNode : Tree a, Nat, Node a -> Tree a
+insertNode = \tree, idx, node ->
+    when List.get tree idx is
+        Ok (Data _) -> 
+            when node is
+                Data data -> List.set tree idx (Data { val: data.val, idx })
+                Null ->
+                    treeLhsDeleted = deleteNode tree (getLhsIdx idx)
+                    treeRhsDeleted = deleteNode treeLhsDeleted (getRhsIdx idx)
+                    List.set treeRhsDeleted idx node
+        Ok Null -> List.set tree idx node
         Err OutOfBounds -> tree
 
 ## Add space for a new level to the tree
