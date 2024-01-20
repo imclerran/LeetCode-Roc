@@ -8,7 +8,6 @@ interface InorderTraversal
             getRhsIdx,
             getValAtIdx,
             createTreeFromStrList,
-            createTreeFromStrList2,
         }
     ]
 
@@ -25,10 +24,5 @@ inorderTraversalRecur = \tree, index, valsList ->
         Err _ -> valsList
      
 expect
-    # Note: the list for constructing the tree has been modified from the original problem
-    # in order to conform to the format expected by the RocUtils.BinaryTree.createTreeFromStrList function
-    # This function was written based on the list format in problem 872.
-    inorder1 = createTreeFromStrList ["1", "", "2", "", "", "3"] Str.toI64 |> inorderTraversal
-    inorder2 = createTreeFromStrList2 ["1", "", "2", "3"] Str.toI64 |> inorderTraversal
-    inorder1 == [1, 3, 2] &&
-    inorder2 == [1, 3, 2]
+    inorder = createTreeFromStrList ["1", "", "2", "3"] Str.toI64 TruncatedList |> inorderTraversal
+    inorder == [1, 3, 2]

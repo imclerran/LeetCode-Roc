@@ -36,9 +36,9 @@ getLeafVals = \tree, idx, leafVals ->
 # TESTS:
 expect
     # trees with root only
-    root1 = createTreeFromStrList ["1"] Str.toI64
-    root2 = createTreeFromStrList ["1"] Str.toI64
-    root3 = createTreeFromStrList ["0"] Str.toI64
+    root1 = createTreeFromStrList ["1"] Str.toI64 FullList
+    root2 = createTreeFromStrList ["1"] Str.toI64 FullList 
+    root3 = createTreeFromStrList ["0"] Str.toI64 FullList 
 
     (leafSimilar root1 root1) && # self
     (leafSimilar root1 root2) && # identical tree
@@ -46,9 +46,9 @@ expect
 
 expect
     # trees with root and one leaf
-    root1 = createTreeFromStrList ["1"] Str.toI64
-    root2 = createTreeFromStrList ["0", "1"] Str.toI64
-    root3 = createTreeFromStrList ["0", "", "1"] Str.toI64
+    root1 = createTreeFromStrList ["1"] Str.toI64 FullList 
+    root2 = createTreeFromStrList ["0", "1"] Str.toI64 FullList 
+    root3 = createTreeFromStrList ["0", "", "1"] Str.toI64 FullList 
 
     (leafSimilar root1 root2) && # root only and root+lhs
     (leafSimilar root1 root3) && # root only and root+rhs
@@ -56,10 +56,10 @@ expect
 
 expect
     # complex trees
-    root1 = createTreeFromStrList ["3", "5", "1", "6", "2", "9", "8", "null", "null", "7", "4"] Str.toI64 # leaf similar #1
-    root2 = createTreeFromStrList ["3", "5", "1", "6", "7", "4", "2", "null", "null", "null", "null", "null", "null", "9", "8"] Str.toI64 # leaf similar #2
-    root3 = createTreeFromStrList ["3", "5", "1", "6", "7", "4", "2", "null", "null", "null", "null", "null", "9", "9", "8"] Str.toI64 # not leaf similar
+    root1 = createTreeFromStrList ["3", "5", "1", "6", "2", "9", "8", "null", "null", "7", "4"] Str.toI64 FullList # leaf similar #1
+    root2 = createTreeFromStrList ["3", "5", "1", "6", "7", "4", "2", "null", "null", "null", "null", "null", "null", "9", "8"] Str.toI64 FullList  # leaf similar #2
+    root3 = createTreeFromStrList ["3", "5", "1", "6", "7", "4", "2", "null", "null", "null", "null", "null", "9", "9", "8"] Str.toI64 FullList  # not leaf similar
     
-    (leafSimilar root1 root2) &&
-    !(leafSimilar root1 root3) &&
-    !(leafSimilar root2 root3)
+    (leafSimilar root1 root2) && # root 1 and root 2 are similar
+    !(leafSimilar root1 root3) && # root 1 and root 3 are not similar
+    !(leafSimilar root2 root3) # root 2 and root 3 are not similar
