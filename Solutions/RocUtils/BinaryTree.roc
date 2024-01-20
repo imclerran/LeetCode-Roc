@@ -3,6 +3,7 @@ interface RocUtils.BinaryTree
         countTreeLevels,
         createRoot,
         createTreeFromStrList,
+        createTreeFromStrList2,
         deleteNode,
         getDepthAtIdx,
         getLhs,
@@ -44,12 +45,13 @@ createRoot = \val -> [Data { val, idx: 0 }]
 
 createTreeFromStrList : List Str, (Str -> Result a *) -> Tree a
 createTreeFromStrList = \strList, strToVal ->
-    List.mapWithIndex strList
+    List.mapWithIndex
+        strList
         (\strVal, idx ->
             when strToVal strVal is
                 Ok val -> Data { val, idx }
                 Err _ -> Null
-        )   
+        )
 
 hasLhs : Tree a, Nat -> Bool
 hasLhs = \tree, idx ->
@@ -115,9 +117,10 @@ insertRhs = \tree, idx, val ->
 
 insertLhsNode : Tree a, Nat, Node a -> Tree a
 insertLhsNode = \tree, idx, node ->
-    lhs = when node is
-        Data data -> Data { val: data.val, idx: idx * 2 + 1 }
-        Null -> Null
+    lhs =
+        when node is
+            Data data -> Data { val: data.val, idx: idx * 2 + 1 }
+            Null -> Null
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree (idx * 2 + 1) lhs
         Ok Null -> List.set tree idx lhs
@@ -129,9 +132,10 @@ insertLhsNode = \tree, idx, node ->
 
 insertRhsNode : Tree a, Nat, Node a -> Tree a
 insertRhsNode = \tree, idx, node ->
-    rhs = when node is
-        Data data -> Data { val: data.val, idx: idx * 2 + 2 }
-        Null -> Null
+    rhs =
+        when node is
+            Data data -> Data { val: data.val, idx: idx * 2 + 2 }
+            Null -> Null
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree idx rhs
         Ok Null -> List.set tree (idx * 2 + 1) rhs
@@ -144,7 +148,7 @@ insertRhsNode = \tree, idx, node ->
 deleteNode : Tree a, Nat -> Tree a
 deleteNode = \tree, idx ->
     when List.get tree idx is
-        Ok (Data _) -> 
+        Ok (Data _) ->
             treeLhsDeleted = deleteNode tree (getLhsIdx idx)
             treeRhsDeleted = deleteNode treeLhsDeleted (getRhsIdx idx)
             List.set treeRhsDeleted idx Null
@@ -154,7 +158,7 @@ deleteNode = \tree, idx ->
 insertNode : Tree a, Nat, Node a -> Tree a
 insertNode = \tree, idx, node ->
     when List.get tree idx is
-        Ok (Data _) -> 
+        Ok (Data _) ->
             when node is
                 Data data -> List.set tree idx (Data { val: data.val, idx })
                 Null ->
@@ -203,3 +207,82 @@ getDepthAtIdx : Nat -> Nat
 getDepthAtIdx = \idx ->
     if idx == 0 then 0
     else getDepthAtIdx (getParentIdx idx) + 1
+
+getFirstIdxAtDepth : Nat -> Nat
+getFirstIdxAtDepth = \depth ->
+    Num.powInt 2 depth - 1
+
+getLastIdxAtDepth : Nat -> Nat
+getLastIdxAtDepth = \depth ->
+    Num.powInt 2 (depth + 1) - 2
+
+getNonNullIndicesAtDepth : Tree a, Nat -> List Nat
+getNonNullIndicesAtDepth = \tree, depth ->
+    start = getFirstIdxAtDepth depth
+    end = getLastIdxAtDepth depth
+    len = end - start + 1
+    List.sublist tree { start, len }
+    |> List.keepIf
+        (\node ->
+            when node is
+                Null -> Bool.false
+                Data _ -> Bool.true
+        )
+    |> List.map
+        (\node ->
+            when node is
+                Data { idx } -> idx
+                Null -> crash "Did not expect Null node here."
+        )
+
+
+## Create a tree from a list of strings where the first null in a branch truncates the branch
+## Thus the children of a null node are not included in the list.
+createTreeFromStrList2 : List Str, (Str -> Result a *) -> Tree a
+createTreeFromStrList2 = \strList, strToVal ->
+    when List.first strList is
+        Ok strVal ->
+            when strToVal strVal is
+                Ok val ->
+                    tree = createRoot val
+                    createTreeFromStrList2Recur (List.dropFirst strList 1) strToVal 1 tree
+                Err _ -> [Null]
+        Err ListWasEmpty -> [Null]
+
+createTreeFromStrList2Recur : List Str, (Str -> Result a *), Nat, Tree a -> Tree a
+createTreeFromStrList2Recur = \strList, strToVal, depth, tree ->
+    parentIndices = getNonNullIndicesAtDepth tree (depth - 1)
+    childStrs = List.takeFirst strList (List.len parentIndices * 2)
+    newTree = List.walkWithIndex
+        childStrs
+        tree
+        (\walkTree, strVal, i ->
+            parentIdx = 
+                when List.get parentIndices (Num.divTrunc i 2) is
+                    Ok idx -> idx
+                    Err _ -> crash "Expected parent index to exist."
+            when strToVal strVal is
+                Ok val ->
+                    if Num.isOdd i then
+                        insertLhs walkTree parentIdx val
+                    else
+                        insertRhs walkTree parentIdx val
+                # TODO: fix this:
+                # currently behaves like createTreeFromStrList
+                # commented out code should be correct but recurses infinitely
+                Err _ -> walkTree
+                    # if Num.isOdd i then
+                    #     insertLhsNode walkTree parentIdx Null
+                    # else
+                    #     insertRhsNode walkTree parentIdx Null
+        )
+    remainingStrs = List.dropFirst strList (List.len parentIndices * 2)
+    if List.len remainingStrs > 0 then
+        createTreeFromStrList2Recur remainingStrs strToVal (depth + 1) newTree
+    else
+        newTree
+
+
+
+
+
