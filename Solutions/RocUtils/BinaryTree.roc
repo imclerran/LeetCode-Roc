@@ -101,7 +101,7 @@ insertLhs = \tree, idx, val ->
     lhs = Data { val, idx: idx * 2 + 1 }
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree (idx * 2 + 1) lhs
-        Ok Null -> List.set tree idx lhs
+        Ok Null -> List.set tree (idx * 2 + 1) lhs
         Err OutOfBounds ->
             if List.len tree == idx then
                 List.append tree lhs
@@ -112,7 +112,7 @@ insertRhs : Tree a, Nat, a -> Tree a
 insertRhs = \tree, idx, val ->
     lhs = Data { val, idx: idx * 2 + 2 }
     when List.get tree (idx * 2 + 2) is
-        Ok (Data _) -> List.set tree idx lhs
+        Ok (Data _) -> List.set tree (idx * 2 + 2) lhs
         Ok Null -> List.set tree (idx * 2 + 2) lhs
         Err OutOfBounds ->
             if List.len tree == idx then
@@ -128,7 +128,7 @@ insertLhsNode = \tree, idx, node ->
             Null -> Null
     when List.get tree (idx * 2 + 1) is
         Ok (Data _) -> List.set tree (idx * 2 + 1) lhs
-        Ok Null -> List.set tree idx lhs
+        Ok Null -> List.set tree (idx * 2 + 1) lhs
         Err OutOfBounds ->
             if List.len tree == idx then
                 List.append tree lhs
@@ -142,7 +142,7 @@ insertRhsNode = \tree, idx, node ->
             Data data -> Data { val: data.val, idx: idx * 2 + 2 }
             Null -> Null
     when List.get tree (idx * 2 + 2) is
-        Ok (Data _) -> List.set tree idx rhs
+        Ok (Data _) -> List.set tree (idx * 2 + 2) rhs
         Ok Null -> List.set tree (idx * 2 + 2) rhs
         Err OutOfBounds ->
             if List.len tree == idx then
