@@ -237,7 +237,7 @@ getNonNullIndicesAtDepth = \tree, depth ->
         (\node ->
             when node is
                 Data { idx } -> idx
-                Null -> crash "Did not expect Null node here."
+                Null -> crash "getNonNullIndicesAtDepth: Did not expect Null node here."
         )
 
 
@@ -265,7 +265,7 @@ createTreeFromTruncatedStrListRecur = \strList, strToVal, depth, tree ->
             parentIdx = 
                 when List.get parentIndices (Num.divTrunc i 2) is
                     Ok idx -> idx
-                    Err _ -> crash "Expected parent index to exist."
+                    Err _ -> crash "createTreeFromTruncatedStrListRecur: Expected parent index to exist."
             when strToVal strVal is
                 Ok val ->
                     if Num.isEven i then
