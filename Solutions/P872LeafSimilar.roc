@@ -13,7 +13,7 @@ interface P872LeafSimilar
         },
     ]
 
-isLeafSimilar : Tree a, Tree a -> Bool where a implements Eq
+isLeafSimilar : Tree a, Tree a -> Bool
 isLeafSimilar = \tree1, tree2 ->
     leafVals1 = getLeafVals tree1 0 []
     leafVals2 = getLeafVals tree2 0 []
