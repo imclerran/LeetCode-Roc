@@ -257,32 +257,32 @@ createTreeFromTruncatedStrList = \strList, strToVal ->
 createTreeFromTruncatedStrListRecur : List Str, (Str -> Result a *), Nat, Tree a -> Tree a
 createTreeFromTruncatedStrListRecur = \strList, strToVal, depth, tree ->
     parentIndices = getNonNullIndicesAtDepth tree (depth - 1)
-    childStrs = List.takeFirst strList (List.len parentIndices * 2)
-    newTree = List.walkWithIndex
-        childStrs
+    if List.len parentIndices == 0 then
         tree
-        (\walkTree, strVal, i ->
-            parentIdx = 
-                when List.get parentIndices (Num.divTrunc i 2) is
-                    Ok idx -> idx
-                    Err _ -> crash "createTreeFromTruncatedStrListRecur: Expected parent index to exist."
-            when strToVal strVal is
-                Ok val ->
-                    if Num.isEven i then
-                        insertLhs walkTree parentIdx val
-                    else
-                        insertRhs walkTree parentIdx val
-                Err _ -> 
-                    if Num.isEven i then
-                        insertLhsNode walkTree parentIdx Null
-                    else
-                        insertRhsNode walkTree parentIdx Null
-        )
-    remainingStrs = List.dropFirst strList (List.len parentIndices * 2)
-    if List.len remainingStrs > 0 then
-        createTreeFromTruncatedStrListRecur remainingStrs strToVal (depth + 1) newTree
     else
-        newTree
+        childStrs = List.takeFirst strList (List.len parentIndices * 2)
+        newTree = List.walkWithIndex
+            childStrs
+            tree
+            (\walkTree, strVal, i ->
+                parentIdx = 
+                    when List.get parentIndices (Num.divTrunc i 2) is
+                        Ok idx -> idx
+                        Err _ -> crash "createTreeFromTruncatedStrListRecur: Expected parent index to exist."
+                when strToVal strVal is
+                    Ok val ->
+                        if Num.isEven i then
+                            insertLhs walkTree parentIdx val
+                        else
+                            insertRhs walkTree parentIdx val
+                    Err _ -> 
+                        if Num.isEven i then
+                            insertLhsNode walkTree parentIdx Null
+                        else
+                            insertRhsNode walkTree parentIdx Null
+            )
+        remainingStrs = List.dropFirst strList (List.len parentIndices * 2)
+        createTreeFromTruncatedStrListRecur remainingStrs strToVal (depth + 1) newTree
 
 
 
