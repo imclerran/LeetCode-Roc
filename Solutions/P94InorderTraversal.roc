@@ -1,5 +1,5 @@
 # LeetCode 94. Binary Tree Inorder Traversal
-interface InorderTraversal
+interface P94InorderTraversal
     exposes []
     imports [
         RocUtils.BinaryTree.{

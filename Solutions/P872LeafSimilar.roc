@@ -1,5 +1,5 @@
 ## LeetCode 872. Leaf-Similar Trees
-interface LeafSimilar
+interface P872LeafSimilar
     exposes [leafSimilar]
     imports [
         RocUtils.BinaryTree.{
