@@ -12,7 +12,6 @@ interface RocUtils.BinaryTree
         getParentNode,
         getRhs,
         getRhsIdx,
-        #getValAtIdx,
         hasLhs,
         hasRhs,
         insertLhs,
