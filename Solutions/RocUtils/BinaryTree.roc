@@ -12,7 +12,7 @@ interface RocUtils.BinaryTree
         getParentNode,
         getRhs,
         getRhsIdx,
-        getValAtIdx,
+        #getValAtIdx,
         hasLhs,
         hasRhs,
         insertLhs,
@@ -24,19 +24,14 @@ interface RocUtils.BinaryTree
     ]
     imports []
 
-Node a : [Data { val : a, idx : Nat }, Null] where a implements Inspect.Inspect
-Tree a : List (Node a) where a implements Inspect.Inspect
+Node a : [Data { val : a, idx : Nat }, Null]
+Tree a : List (Node a)
 
-getNodeVal : Node a -> Result a [DoesNotExist]
-getNodeVal = \node ->
-    when node is
-        Data { val } -> Ok val
-        Null -> Err DoesNotExist
-
-getValAtIdx : Tree a, Nat -> Result a [DoesNotExist]
-getValAtIdx = \tree, idx ->
+getNodeVal : Tree a, Nat -> Result a [DoesNotExist]
+getNodeVal = \tree, idx ->
     when List.get tree idx is
-        Ok node -> getNodeVal node
+        Ok (Data { val }) -> Ok val
+        Ok Null -> Err DoesNotExist
         Err OutOfBounds -> Err DoesNotExist
 
 createRoot : a -> Tree a

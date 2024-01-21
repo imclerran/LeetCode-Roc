@@ -6,7 +6,7 @@ interface P94InorderTraversal
             Tree,
             getLhsIdx,
             getRhsIdx,
-            getValAtIdx,
+            getNodeVal,
             createTreeFromStrList,
         },
     ]
@@ -16,7 +16,7 @@ inorderTraversal = \tree -> inorderTraversalRecur tree 0 []
 
 inorderTraversalRecur : Tree a, Nat, List a -> List a
 inorderTraversalRecur = \tree, index, valsList ->
-    when getValAtIdx tree index is
+    when getNodeVal tree index is
         Ok val ->
             valsListWithLeft = inorderTraversalRecur tree (getLhsIdx index) valsList
             valsListWithCurrent = valsListWithLeft |> List.append val

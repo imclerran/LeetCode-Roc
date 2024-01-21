@@ -9,7 +9,7 @@ interface P872LeafSimilar
             hasRhs,
             getLhsIdx,
             getRhsIdx,
-            getValAtIdx,
+            getNodeVal,
         },
     ]
 
@@ -17,7 +17,12 @@ leafSimilar : Tree a, Tree a -> Bool where a implements Eq
 leafSimilar = \tree1, tree2 ->
     leafVals1 = getLeafVals tree1 0 []
     leafVals2 = getLeafVals tree2 0 []
-    List.map2 leafVals1 leafVals2 (\v1, v2 -> v1 == v2) |> List.all (\bool -> bool)
+    if (List.len leafVals1) == 0 && (List.len leafVals2) == 0 then
+        Bool.true
+    else if (List.len leafVals1) != (List.len leafVals2) then
+        Bool.false
+    else
+        List.map2 leafVals1 leafVals2 (\v1, v2 -> v1 == v2) |> List.all (\bool -> bool)
 
 getLeafVals : Tree a, Nat, List a -> List a
 getLeafVals = \tree, idx, leafVals ->
@@ -28,12 +33,14 @@ getLeafVals = \tree, idx, leafVals ->
         else 
             leafValsWithLeft
     else if hasRhs tree idx then
-        getLeafVals tree (getLhsIdx idx) leafVals
-    else when getValAtIdx tree idx is
+        getLeafVals tree (getRhsIdx idx) leafVals
+    else when getNodeVal tree idx is
         Ok val -> List.append leafVals val
         Err _ -> leafVals
 
 # TESTS:
+# TODO: add tests for trees with different numbers of leaves 
+# (where all the leaves are the same for the shorter list)
 expect
     # trees with root only
     root1 = createTreeFromStrList ["1"] Str.toI64 FullList
@@ -44,15 +51,17 @@ expect
     (leafSimilar root1 root2) && # identical tree
     !(leafSimilar root1 root3) # different tree
 
+
 expect
     # trees with root and one leaf
     root1 = createTreeFromStrList ["1"] Str.toI64 FullList 
     root2 = createTreeFromStrList ["0", "1"] Str.toI64 FullList 
     root3 = createTreeFromStrList ["0", "", "1"] Str.toI64 FullList 
 
-    (leafSimilar root1 root2) && # root only and root+lhs
-    (leafSimilar root1 root3) && # root only and root+rhs
-    (leafSimilar root2 root3) # root+lhs and root+rhs
+    t1 = (leafSimilar root1 root2) # root only and root+lhs
+    t2 = (leafSimilar root1 root3) # root only and root+rhs
+    t3 = (leafSimilar root2 root3) # root+lhs and root+rhs
+    t1 && t2 && t3
 
 expect
     # complex trees
