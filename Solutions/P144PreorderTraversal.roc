@@ -28,36 +28,30 @@ preorderTraversalRecur = \valsList, tree, index ->
 expect
     # Empty tree
     tree = createTreeFromStrList [] Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == []
+    preorderTraversal tree == []
 
 expect
     # Single node tree
     tree = createTreeFromStrList ["1"] Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == [1]
+    preorder = preorderTraversal tree == [1]
 
 expect
     # Tree with root and left child
     tree = createTreeFromStrList ["1", "2"] Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == [1, 2]
+    preorderTraversal tree == [1, 2]
 
 expect
     # Tree with root and right child
     tree = createTreeFromStrList ["1", "null", "2"] Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == [1, 2]
+    preorderTraversal tree == [1, 2]
 
 expect
     # Tree with root and left and right child
     tree = createTreeFromStrList ["1", "2", "3"] Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == [1, 2, 3]
+    preorderTraversal tree == [1, 2, 3]
 
 expect
     # Complex tree
     strList = ["1", "null", "2", "3", "4", "null", "5", "6", "7", "8", "9"]
     tree = createTreeFromStrList strList Str.toI64 TruncatedList
-    preorder = preorderTraversal tree
-    preorder == [1, 2, 3, 5, 8, 9, 4, 6, 7]
+    preorderTraversal tree == [1, 2, 3, 5, 8, 9, 4, 6, 7]
