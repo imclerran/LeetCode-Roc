@@ -26,14 +26,14 @@ postorderTraversalRecur = \valsList, tree, index ->
 
 expect
     # Empty tree
-    tree = createTreeFromStrList [] Str.toI64 TruncatedList
-    postorderTraversal tree == []
+    postorder = createTreeFromStrList [] Str.toI64 TruncatedList |> postorderTraversal
+    postorder == []
 
 expect
     # Single node tree
-    tree = createTreeFromStrList ["1"] Str.toI64 TruncatedList
-    postorderTraversal tree == [1]
+    postorder = createTreeFromStrList ["1"] Str.toI64 TruncatedList |> postorderTraversal
+    postorder == [1]
         
 expect
-    tree = createTreeFromStrList ["1", "null", "2", "3"] Str.toI64 TruncatedList
-    postorderTraversal tree == [3, 2, 1]
+    postorder = createTreeFromStrList ["1", "null", "2", "3"] Str.toI64 TruncatedList |> postorderTraversal
+    postorder == [3, 2, 1]
