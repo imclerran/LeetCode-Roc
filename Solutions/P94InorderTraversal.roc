@@ -12,15 +12,16 @@ interface P94InorderTraversal
     ]
 
 inorderTraversal : Tree a -> List a
-inorderTraversal = \tree -> inorderTraversalRecur tree 0 []
+inorderTraversal = \tree -> inorderTraversalRecur [] tree 0
 
-inorderTraversalRecur : Tree a, Nat, List a -> List a
-inorderTraversalRecur = \tree, index, valsList ->
+inorderTraversalRecur :List a, Tree a, Nat -> List a
+inorderTraversalRecur = \valsList, tree, index ->
     when getNodeVal tree index is
         Ok val ->
-            valsListWithLeft = inorderTraversalRecur tree (getLhsIdx index) valsList
-            valsListWithCurrent = valsListWithLeft |> List.append val
-            inorderTraversalRecur tree (getRhsIdx index) valsListWithCurrent
+            valsList 
+            |> inorderTraversalRecur tree (getLhsIdx index)
+            |> List.append val
+            |> inorderTraversalRecur tree (getRhsIdx index)
         Err _ -> valsList
 
 # TESTS
