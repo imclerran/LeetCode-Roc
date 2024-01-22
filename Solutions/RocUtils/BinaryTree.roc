@@ -23,8 +23,8 @@ interface RocUtils.BinaryTree
     ]
     imports []
 
-Node a : [Data { val : a, idx : Nat }, Null] where a implements Eq & Inspect.Inspect
-Tree a : List (Node a) where a implements Eq & Inspect.Inspect
+Node a : [Data { val : a, idx : Nat }, Null] where a implements Eq & Inspect
+Tree a : List (Node a) where a implements Eq & Inspect
 
 getNodeVal : Tree a, Nat -> Result a [DoesNotExist]
 getNodeVal = \tree, idx ->
